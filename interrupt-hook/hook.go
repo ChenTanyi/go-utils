@@ -9,19 +9,26 @@ import (
 )
 
 var (
-	funcs   []func()
+	funcs   = make(map[string]func())
 	running bool
 	mutex   = &sync.Mutex{}
 )
 
 // Add .
-func Add(function func()) {
+func Add(name string, function func()) {
 	mutex.Lock()
 	defer mutex.Unlock()
 	if !running {
 		start()
 	}
-	funcs = append(funcs, function)
+	funcs[name] = function
+}
+
+// Remove .
+func Remove(name string) {
+	mutex.Lock()
+	defer mutex.Unlock()
+	delete(funcs, name)
 }
 
 func start() {
